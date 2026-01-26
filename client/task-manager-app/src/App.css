@@ -1,0 +1,153 @@
+.page {
+  padding: 32px;
+  font-family: system-ui, Arial, sans-serif;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.titles {
+  display: flex;
+  flex-direction: column;
+}
+
+/* LOGO */
+.logoWrap {
+  width: 92px;
+  height: 92px;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(97, 218, 251, 0.14) 0%,
+    rgba(97, 218, 251, 0.06) 40%,
+    rgba(0, 0, 0, 0) 75%
+  );
+}
+
+.logoSpin {
+  width: 78px;
+  height: 78px;
+  animation: spin 6s linear infinite, pulseGlow 1.6s ease-in-out infinite;
+  filter: drop-shadow(0 0 18px rgba(97, 218, 251, 0.85));
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { filter: drop-shadow(0 0 10px rgba(97,218,251,0.55)); }
+  50% { filter: drop-shadow(0 0 28px rgba(97,218,251,1)); }
+}
+
+/* TITULO OLAS */
+.titleWave {
+  margin: 0;
+  font-size: 54px;
+  line-height: 1.05;
+
+  background: linear-gradient(
+    90deg,
+    #eaf6ff 0%,
+    #61dafb 20%,
+    #ffffff 40%,
+    #61dafb 60%,
+    #eaf6ff 80%,
+    #61dafb 100%
+  );
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+
+  text-shadow: 0 0 14px rgba(97, 218, 251, 0.25);
+  animation: waveGradient 2.6s linear infinite, floatUpDown 2.2s ease-in-out infinite;
+}
+
+@keyframes waveGradient {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+
+@keyframes floatUpDown {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-4px); }
+}
+
+/* SUBTITULO */
+.subtitle {
+  margin: 6px 0 0;
+  font-size: 18px;
+  opacity: 0.95;
+}
+
+.subtitleWave {
+  display: inline-block;
+  color: rgba(234, 246, 255, 0.92);
+  animation: subFloat 2.4s ease-in-out infinite, subGlow 1.9s ease-in-out infinite;
+}
+
+@keyframes subFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-2px); }
+}
+
+@keyframes subGlow {
+  0%, 100% { text-shadow: 0 0 10px rgba(97,218,251,0.22), 0 0 18px rgba(97,218,251,0.12); }
+  50% { text-shadow: 0 0 16px rgba(97,218,251,0.40), 0 0 26px rgba(97,218,251,0.20); }
+}
+
+/* CORAZÓN */
+.heartBlue {
+  display: inline-block;
+  margin-left: 6px;
+  animation: heartbeat 1.15s ease-in-out infinite;
+  filter: drop-shadow(0 0 14px rgba(97,218,251,0.9));
+}
+
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  35% { transform: scale(1.25); }
+  60% { transform: scale(1.08); }
+}
+
+/* CARD + BOTON */
+.card {
+  padding: 18px;
+  border-radius: 16px;
+  max-width: 560px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.list {
+  margin: 10px 0 0;
+}
+
+.btn {
+  margin-top: 0;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(97, 218, 251, 0.35);
+  background: rgba(97, 218, 251, 0.08);
+  cursor: pointer;
+  color: inherit;
+}
+
+.btn:hover {
+  background: rgba(97, 218, 251, 0.15);
+}
+
+@media (max-width: 600px) {
+  .titleWave { font-size: 36px; }
+  .logoSpin { width: 56px; height: 56px; }
+  .logoWrap { width: 66px; height: 66px; }
+  .card { max-width: 100%; }
+}
