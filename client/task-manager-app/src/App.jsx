@@ -8,8 +8,7 @@ export default function App() {
   const [showForm, setShowForm] = useState(false);
   const [projectName, setProjectName] = useState("");
   const [error, setError] = useState("");
-
-  // ✅ si editId != null, estamos editando
+  // si editId != null, estamos editando
   const [editId, setEditId] = useState(null);
 
   const nextId = useMemo(() => {
@@ -36,7 +35,7 @@ export default function App() {
 
     const name = projectName.trim();
 
-    // ✅ validación
+    // validación
     if (!name) {
       setError("Escribe el nombre del proyecto.");
       return;
@@ -46,7 +45,7 @@ export default function App() {
       return;
     }
 
-    // ✅ evitar duplicados (excepto cuando editas el mismo)
+    // evitar duplicados (excepto cuando editas el mismo)
     const exists = projects.some(
       (p) => p.name.toLowerCase() === name.toLowerCase() && p.id !== editId
     );
@@ -55,7 +54,7 @@ export default function App() {
       return;
     }
 
-    // ✅ create / update (SEGURO)
+    // create / update (SEGURO)
     if (editId !== null) {
       setProjects((prev) =>
         prev.map((p) => (p.id === editId ? { ...p, name } : p))
@@ -81,7 +80,7 @@ export default function App() {
   }
 
   function cancelEditOnly() {
-    // ✅ cancela edición, pero deja el form abierto para que puedas crear otro si quieres
+    // cancela edición, pero deja el form abierto para que puedas crear otro si quieres
     setEditId(null);
     setProjectName("");
     setError("");
@@ -141,7 +140,7 @@ export default function App() {
               {editId !== null ? "Guardar cambios" : "Guardar proyecto"}
             </button>
 
-            {/* ✅ Botón extra para cancelar solo la edición */}
+            {/*Botón extra para cancelar solo la edición */}
             {editId !== null && (
               <button
                 type="button"
