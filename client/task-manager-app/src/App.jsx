@@ -1,14 +1,27 @@
 import { useMemo, useState } from "react";
+import { io } from "socket.io-client";
 import reactLogo from "./assets/react.svg";
 import "./App.css";
 
+const socket = io("http://localhost:5000", {
+  transports: ["websocket"]
+});
+
+
+socket.on("notification", (msg) => {
+  alert("Notificación en tiempo real: " + msg);
+});
+
 export default function App() {
   const [projects, setProjects] = useState([]);
+  socket.on("notification", (msg) => {
+  alert("Notificación en tiempo real: " + msg);
+});
+
 
   const [showForm, setShowForm] = useState(false);
   const [projectName, setProjectName] = useState("");
   const [error, setError] = useState("");
-  // si editId != null, estamos editando
   const [editId, setEditId] = useState(null);
 
   const nextId = useMemo(() => {
@@ -30,12 +43,23 @@ export default function App() {
     setError("");
   }
 
+  async function enviarNotificacion(nombre) {
+    await fetch("http://localhost:5000/notify", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        message: "Nuevo proyecto creado: " + nombre,
+      }),
+    });
+  }
+
   function handleSubmit(e) {
     e.preventDefault();
 
     const name = projectName.trim();
 
-    // validación
     if (!name) {
       setError("Escribe el nombre del proyecto.");
       return;
@@ -45,7 +69,6 @@ export default function App() {
       return;
     }
 
-    // evitar duplicados (excepto cuando editas el mismo)
     const exists = projects.some(
       (p) => p.name.toLowerCase() === name.toLowerCase() && p.id !== editId
     );
@@ -54,13 +77,15 @@ export default function App() {
       return;
     }
 
-    // create / update (SEGURO)
     if (editId !== null) {
       setProjects((prev) =>
         prev.map((p) => (p.id === editId ? { ...p, name } : p))
       );
     } else {
       setProjects((prev) => [{ id: nextId, name }, ...prev]);
+
+      // NOTIFICACIÓN EN TIEMPO REAL
+      enviarNotificacion(name);
     }
 
     closeForm();
@@ -75,12 +100,10 @@ export default function App() {
 
   function handleDelete(id) {
     setProjects((prev) => prev.filter((p) => p.id !== id));
-    // si borras el que estabas editando, cierra form
     if (editId === id) closeForm();
   }
 
   function cancelEditOnly() {
-    // cancela edición, pero deja el form abierto para que puedas crear otro si quieres
     setEditId(null);
     setProjectName("");
     setError("");
@@ -96,58 +119,42 @@ export default function App() {
         <div className="titles">
           <h1 className="titleWave">Task Manager</h1>
           <p className="subtitle subtitleWave">
-            Bienvenida Yuli <span className="heartBlue">💙</span>
+            Bienvenida Yuli 💙
           </p>
         </div>
       </header>
 
       <section className="card">
         <h2>
-          Proyectos <span style={{ opacity: 0.7 }}>({projects.length})</span>
+          Proyectos ({projects.length})
         </h2>
 
         {!showForm ? (
-          <button className="btn" onClick={openCreate} style={{ marginTop: "12px" }}>
+          <button className="btn" onClick={openCreate}>
             + Crear nuevo proyecto
           </button>
         ) : (
-          <button className="btn" onClick={closeForm} style={{ marginTop: "12px" }}>
+          <button className="btn" onClick={closeForm}>
             Cancelar
           </button>
         )}
 
         {showForm && (
-          <form onSubmit={handleSubmit} style={{ marginTop: "12px" }}>
+          <form onSubmit={handleSubmit}>
             <input
               value={projectName}
               onChange={(e) => setProjectName(e.target.value)}
               placeholder="Nombre del proyecto"
-              style={{
-                width: "100%",
-                padding: "10px",
-                borderRadius: "10px",
-                border: "1px solid rgba(255,255,255,0.18)",
-                background: "rgba(255,255,255,0.06)",
-                color: "inherit",
-              }}
             />
 
-            {error && (
-              <p style={{ marginTop: "8px", color: "#ffb4b4" }}>{error}</p>
-            )}
+            {error && <p>{error}</p>}
 
-            <button className="btn" type="submit" style={{ marginTop: "10px" }}>
+            <button className="btn" type="submit">
               {editId !== null ? "Guardar cambios" : "Guardar proyecto"}
             </button>
 
-            {/*Botón extra para cancelar solo la edición */}
             {editId !== null && (
-              <button
-                type="button"
-                className="btn"
-                onClick={cancelEditOnly}
-                style={{ marginTop: "10px", marginLeft: "10px" }}
-              >
+              <button type="button" className="btn" onClick={cancelEditOnly}>
                 Cancelar edición
               </button>
             )}
@@ -155,44 +162,16 @@ export default function App() {
         )}
 
         {projects.length === 0 ? (
-          <p style={{ marginTop: "14px", opacity: 0.75 }}>
-            Aún no tienes proyectos. Crea uno con el botón.
-          </p>
+          <p>Aún no tienes proyectos.</p>
         ) : (
-          <ul className="list" style={{ marginTop: "12px" }}>
+          <ul>
             {projects.map((p) => (
-              <li key={p.id} style={{ marginBottom: "10px" }}>
+              <li key={p.id}>
                 {p.name}
 
-                <button
-                  onClick={() => handleEdit(p)}
-                  style={{
-                    marginLeft: "10px",
-                    padding: "4px 10px",
-                    borderRadius: "10px",
-                    border: "1px solid rgba(255,255,255,0.18)",
-                    background: "rgba(97,218,251,0.10)",
-                    cursor: "pointer",
-                    color: "inherit",
-                  }}
-                >
-                  Editar
-                </button>
+                <button onClick={() => handleEdit(p)}>Editar</button>
 
-                <button
-                  onClick={() => handleDelete(p.id)}
-                  style={{
-                    marginLeft: "8px",
-                    padding: "4px 10px",
-                    borderRadius: "10px",
-                    border: "1px solid rgba(255,255,255,0.18)",
-                    background: "rgba(255,255,255,0.06)",
-                    cursor: "pointer",
-                    color: "inherit",
-                  }}
-                >
-                  Eliminar
-                </button>
+                <button onClick={() => handleDelete(p.id)}>Eliminar</button>
               </li>
             ))}
           </ul>
